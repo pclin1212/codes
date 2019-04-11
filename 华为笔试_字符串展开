@@ -1,0 +1,67 @@
+#include <iostream>
+#include <stdio.h>
+#include <algorithm>
+#include <vector>
+#include <string>
+#include <string.h>
+#include <stack>
+
+using namespace std;
+
+int main()
+{
+    stack<char> in_stack;
+    string Str;
+    string tmp_str = "";
+
+    cin>>Str;
+
+    size_t n = Str.size();
+
+    for(size_t i = 0; i < n; i ++)
+    {
+        if(Str[i] != ')'&& Str[i] != ']' && Str[i] != '}')
+        {
+            in_stack.push(Str[i]);
+        }
+        else
+        {
+            char c = in_stack.top();
+            while(c != '('&& c!= '[' && c != '{' )
+            {
+
+                tmp_str += c;
+                in_stack.pop();
+                c = in_stack.top();
+            }
+
+            in_stack.pop();
+            size_t num = in_stack.top() - '0';
+
+            in_stack.pop();
+
+            size_t l = 0, j = 0;
+            while(l < num)
+            {
+                j = tmp_str.size();
+                while(j > 0 )
+                {
+                    j --;
+                    in_stack.push(tmp_str[j]);
+
+                }
+                l++;
+            }
+            tmp_str = "";
+        }
+    }
+    while(!in_stack.empty())
+    {
+        cout<<in_stack.top();
+        in_stack.pop();
+    }
+
+
+    return 0;
+}
+
