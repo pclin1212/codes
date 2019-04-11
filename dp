@@ -1,0 +1,106 @@
+#include <iostream>
+#include <stdio.h>
+#include <algorithm>
+#include <vector>
+#include <string>
+#include <string.h>
+
+#include <fstream>
+
+using namespace std;
+
+struct node_Type
+{
+    int x, y;
+    int h;
+    static bool cmp(node_Type A, node_Type B)
+    {
+        return A.h < B.h;
+    }
+};
+
+int main()
+{
+    int N = 0, M = 0;
+    int sx, sy, dx, dy;
+    size_t loc ;
+    ifstream *is = new ifstream("in.txt", ios::in);
+    (*is)>>N>>M;
+    int **map_ = new int* [N];
+    int *dp   = new int [N*M];
+    node_Type *node = new node_Type [N*M];
+
+    for(size_t t = 0; t < N; t ++)
+    {
+        loc = t * M;
+
+        map_[t] = new int[M];
+        for(size_t m = 0; m < M; m ++)
+        {
+            dp[loc + m ] = 0;
+            (*is)>>node[loc + m].h;
+
+            node[loc + m].x = t;
+            node[loc + m].y = m;
+        }
+    }
+
+    (*is)>>sx>>sy>>dx>>dy;
+
+    sort(node, node + N*M, node_Type::cmp);
+
+    for(size_t t = 0; t < N; t ++)
+    {
+        loc = t * M;
+        for(size_t m = 0; m < M; m ++)
+        {
+            size_t x = node[loc + m].x;
+            size_t y = node[loc + m].y;
+            map_[x][y] = loc + m;
+        }
+    }
+
+    size_t position_start,position_end;
+    position_start = map_[sx][sy];
+    position_end   = map_[dx][dy];
+
+    dp[map_[sx][sy]] = 1;
+
+
+    for(size_t p = 0; p < position_start; p ++)
+    {
+        dp[p] = 0;
+    }
+
+
+    for(size_t p = position_start + 1; p <= position_end; p++)
+    {
+        if(node[p].x - 1 >= 0)
+            if(node[p].h > node[map_[node[p].x - 1][node[p].y]].h)
+            {
+                dp[p] += dp[map_[node[p].x - 1][node[p].y]];
+            }
+        if(node[p].y - 1 >= 0)
+            if(node[p].h > node[map_[node[p].x][node[p].y - 1]].h)
+            {
+                dp[p] += dp[map_[node[p].x][node[p].y - 1]];
+            }
+        if(node[p].x + 1 <= N - 1)
+            if(node[p].h > node[map_[node[p].x + 1][node[p].y]].h)
+            {
+                dp[p] += dp[map_[node[p].x + 1][node[p].y]];
+            }
+         if(node[p].y + 1 <= M - 1)
+            if(node[p].h > node[map_[node[p].x][node[p].y + 1]].h)
+            {
+                dp[p] += dp[map_[node[p].x][node[p].y + 1]];
+            }
+    }
+
+    cout<<dp[position_end]<<endl;
+
+
+
+    return 0;
+}
+
